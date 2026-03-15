@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garment Factory Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0071e3;
+            --secondary-color: #e8eaed;
+            --success-color: #34c759;
+            --warning-color: #ff9f0a;
+            --danger-color: #ff3b30;
+            --background-color: #f5f5f7;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --sidebar-bg: rgba(255, 255, 255, 0.6);
+            --sidebar-border: rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Glassmorphism Sidebar */
+        .sidebar {
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--sidebar-border);
+            color: var(--text-primary);
+            position: fixed;
+            width: 260px;
+            min-height: 100vh;
+            z-index: 1000;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.02);
+        }
+
+        .sidebar-brand {
+            padding: 30px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            color: var(--text-primary);
+        }
+
+        .sidebar-brand h3 {
+            font-weight: 700;
+            font-size: 1.3rem;
+            background: linear-gradient(90deg, #0071e3, #4ea8de);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-brand small {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        .sidebar-menu {
+            padding: 15px;
+        }
+
+        .sidebar-menu a {
+            color: var(--text-secondary);
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .sidebar-menu a i {
+            width: 24px;
+            font-size: 1.1rem;
+            margin-right: 10px;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(0, 113, 227, 0.08);
+            color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu a.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px 40px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        #page-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, #1d1d1f, #434344);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-weight: 600;
+            padding: 20px 25px;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            text-align: left;
+            padding: 25px;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .stat-card i.fa-2x {
+            position: absolute;
+            right: 20px;
+            bottom: -15px;
+            font-size: 6rem;
+            opacity: 0.15;
+            transform: rotate(-15deg);
+        }
+
+        .stat-card.primary { background: linear-gradient(135deg, #0071e3, #4ea8de); }
+        .stat-card.success { background: linear-gradient(135deg, #34c759, #30d158); }
+        .stat-card.warning { background: linear-gradient(135deg, #ff9f0a, #ffd60a); }
+        .stat-card.danger { background: linear-gradient(135deg, #ff3b30, #ff6961); }
+
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0 5px 0;
+            line-height: 1;
+        }
+
+        /* Typography, Buttons, and Tables */
+        .btn {
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0071e3, #005bb5);
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #005bb5, #004494);
+            box-shadow: 0 6px 16px rgba(0, 113, 227, 0.4);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-outline-primary, .btn-secondary {
+            border-radius: 12px;
+        }
+
+        .table-responsive {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table {
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: var(--secondary-color);
+            border-top: none;
+            border-bottom: none;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 15px;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            font-weight: 500;
+        }
+
+        .badge {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+
+        .badge-grade-A { background-color: #e3f9e9; color: #27ae60; }
+        .badge-grade-B { background-color: #e5f2fc; color: #0071e3; }
+        .badge-grade-C { background-color: #fff4e5; color: #ff9f0a; }
+        .badge-grade-D { background-color: #ffebe9; color: #ff3b30; }
+        .badge-machine { background-color: #f2e6ff; color: #8e44ad; }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background-color: rgba(0,0,0,0.05);
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            border-radius: 4px;
+        }
+
+        .machine-info-card {
+            border-left: 4px solid #8e44ad;
+        }
+
+        /* Form controls */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 12px 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.5);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #0071e3;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            background: white;
+            outline: none;
+        }
+        
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+        }
+        .modal-header {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 20px 25px;
+        }
+        .modal-body {
+            padding: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar d-none d-md-block">
+        <div class="sidebar-brand">
+            <h3><i class="fas fa-tshirt"></i> ချုပ်လုပ်ငန်း</h3>
+            <small>စက်နှင့်အလုပ်သမား စီမံခန့်ခွဲမှုစနစ်</small>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="#" class="active" onclick="showDashboard()">
+                <i class="fas fa-tachometer-alt"></i> ပင်မစာမျက်နှာ
+            </a>
+            <a href="#" onclick="showEmployees()">
+                <i class="fas fa-users"></i> အလုပ်သမားများ
+            </a>
+            <a href="#" onclick="showWorkRecords()">
+                <i class="fas fa-clipboard-list"></i> အလုပ်မှတ်တမ်း
+            </a>
+            <a href="#" onclick="showMachines()">
+                <i class="fas fa-cogs"></i> စက်ပစ္စည်းများ
+            </a>
+            <a href="#" onclick="showGroups()">
+                <i class="fas fa-object-group"></i> အဖွဲ့များ (10 ဖွဲ့)
+            </a>
+            <a href="#" onclick="showReports()">
+                <i class="fas fa-chart-bar"></i> အစီရင်ခံစာများ
+            </a>
+            <a href="#" onclick="showDataEntry()">
+                <i class="fas fa-keyboard"></i> ဒေတာအသွင်း
+            </a>
+            <hr style="border-color: #34495e; margin: 20px;">
+            <a href="#">
+                <i class="fas fa-cog"></i> ပြင်ဆင်ချက်များ
+            </a>
+            <a href="#">
+                <i class="fas fa-sign-out-alt"></i> ထွက်မည်
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h4 id="page-title">ပင်မစာမျက်နှာ</h4>
+            <div>
+                <span class="me-3">
+                    <i class="fas fa-user-circle"></i> Admin
+                </span>
+                <button class="btn btn-primary btn-sm" onclick="showAddEmployeeModal()">
+                    <i class="fas fa-plus"></i> အလုပ်သမားအသစ်
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content">
+            <!-- Statistics Cards -->
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card primary">
+                        <i class="fas fa-users fa-2x"></i>
+                        <div class="stat-number" id="total-employees">30</div>
+                        <div>စုစုပေါင်း အလုပ်သမား</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card success">
+                        <i class="fas fa-cogs fa-2x"></i>
+                        <div class="stat-number" id="total-machines">35</div>
+                        <div>စုစုပေါင်း စက်</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card warning">
+                        <i class="fas fa-clipboard-check fa-2x"></i>
+                        <div class="stat-number" id="today-records">15</div>
+                        <div>ဒီနေ့မှတ်တမ်း</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="stat-card danger">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        <div class="stat-number" id="defect-rate">2.3%</div>
+                        <div>ချို့ယွင်းနှုန်း</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Machine Status Overview -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-cogs"></i> စက်အခြေအနေ ခြုံငုံကြည့်ရှုခြင်း
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="machine-status-overview">
+                                <!-- Machine status cards will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Records and Employee Summary -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-history"></i> လတ်တလော အလုပ်မှတ်တမ်းများ
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>နေ့စွဲ</th>
+                                            <th>အလုပ်သမား ID</th>
+                                            <th>အမည်</th>
+                                            <th>စက်</th>
+                                            <th>ထုတ်လုပ်မှု</th>
+                                            <th>အရည်အသွေး</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-records">
+                                        <!-- Data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie"></i> Grade အလိုက် အလုပ်သမားများ
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <span class="badge badge-grade-A p-2">A Grade: <span id="grade-a-count">8</span></span>
+                                <span class="badge badge-grade-B p-2">B Grade: <span id="grade-b-count">12</span></span>
+                                <span class="badge badge-grade-C p-2">C Grade: <span id="grade-c-count">7</span></span>
+                                <span class="badge badge-grade-D p-2">D Grade: <span id="grade-d-count">3</span></span>
+                            </div>
+                            <div style="position: relative; height: 300px; width: 100%;">
+                                <canvas id="gradeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Machine Type Distribution -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar"></i> စက်အမျိုးအစားအလိုက် ဖြန့်ဝေမှု
+                        </div>
+                        <div class="card-body">
+                            <div style="position: relative; height: 350px; width: 100%;">
+                                <canvas id="machineTypeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employees Content (Hidden by default) -->
+        <div id="employees-content" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-users"></i> အလုပ်သမားစာရင်း</span>
+                    <button class="btn btn-primary btn-sm" onclick="showAddEmployeeModal()">
+                        <i class="fas fa-plus"></i> အသစ်ထည့်မည်
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="search-employee"
+                                placeholder="အလုပ်သမား ID သို့မဟုတ် အမည်">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control" id="filter-grade">
+                                <option value="">Grade အားလုံး</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control" id="filter-machine">
+                                <option value="">စက်အားလုံး</option>
+                                <!-- Machine options will be loaded -->
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control" id="filter-group">
+                                <option value="">အုပ်စုအားလုံး</option>
+                                <option value="1">လိုင်း 1</option>
+                                <option value="2">လိုင်း 2</option>
+                                <option value="3">လိုင်း 3</option>
+                                <option value="4">လိုင်း 4</option>
+                                <option value="5">လိုင်း 5</option>
+                                <option value="6">လိုင်း 6</option>
+                                <option value="7">လိုင်း 7</option>
+                                <option value="8">လိုင်း 8</option>
+                                <option value="9">လိုင်း 9</option>
+                                <option value="10">လိုင်း 10</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-secondary w-100" onclick="filterEmployees()">
+                                <i class="fas fa-filter"></i> ရှာဖွေမည်
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>အလုပ်သမား ID</th>
+                                    <th>အမည်</th>
+                                    <th>စက်အမျိုးအစား</th>
+                                    <th>အဖွဲ့ Line</th>
+                                    <th>ချုပ်လုပ်သည့်ပွိုင့်</th>
+                                    <th>လုပ်ဆောင်ချက်များ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-table">
+                                <!-- Employee data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Machines Content (Hidden by default) -->
+        <div id="machines-content" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-cogs"></i> စက်ပစ္စည်းများ စာရင်း</span>
+                    <button class="btn btn-primary btn-sm" onclick="showAddMachineModal()">
+                        <i class="fas fa-plus"></i> စက်အသစ်ထည့်မည်
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select class="form-control" id="filter-machine-type">
+                                <option value="">စက်အမျိုးအစား အားလုံး</option>
+                                <!-- Machine type options will be loaded -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="filter-machine-status">
+                                <option value="">အခြေအနေ အားလုံး</option>
+                                <option value="active">အလုပ်လုပ်နိုင်</option>
+                                <option value="maintenance">ပြင်ဆင်နေ</option>
+                                <option value="idle">အလုပ်မရှိ</option>
+                                <option value="broken">ပျက်စီးနေ</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="filter-machine-group">
+                                <option value="">အုပ်စုအားလုံး</option>
+                                <option value="1">လိုင်း 1</option>
+                                <option value="2">လိုင်း 2</option>
+                                <option value="3">လိုင်း 3</option>
+                                <option value="4">လိုင်း 4</option>
+                                <option value="5">လိုင်း 5</option>
+                                <option value="6">လိုင်း 6</option>
+                                <option value="7">လိုင်း 7</option>
+                                <option value="8">လိုင်း 8</option>
+                                <option value="9">လိုင်း 9</option>
+                                <option value="10">လိုင်း 10</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-secondary w-100" onclick="filterMachines()">
+                                <i class="fas fa-filter"></i> စစ်ထုတ်မည်
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>စက်နံပါတ်</th>
+                                    <th>စက်အမျိုးအစား</th>
+                                    <th>အခြေအနေ</th>
+                                    <th>အုပ်စု</th>
+                                    <th>အသုံးပြုသူ</th>
+                                    <th>စက်အသက်</th>
+                                    <th>ပျမ်းမျှထုတ်လုပ်မှု/နာရီ</th>
+                                    <th>လုပ်ဆောင်ချက်များ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="machines-table">
+                                <!-- Machines data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Machine Types Overview -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie"></i> စက်အမျိုးအစားများ
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="machine-types-overview">
+                                <!-- Machine types will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Work Records Content (Hidden by default) -->
+        <div id="work-records-content" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-clipboard-list"></i> အလုပ်မှတ်တမ်းများ</span>
+                    <button class="btn btn-primary btn-sm" onclick="showAddWorkRecordModal()">
+                        <i class="fas fa-plus"></i> မှတ်တမ်းအသစ်
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" id="record-date-filter" value="">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="record-employee-filter"
+                                placeholder="အလုပ်သမား ID">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="record-machine-filter">
+                                <option value="">စက်အားလုံး</option>
+                                <!-- Machine options will be loaded -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-secondary w-100" onclick="filterWorkRecords()">
+                                <i class="fas fa-filter"></i> စစ်ထုတ်မည်
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>နေ့စွဲ</th>
+                                    <th>အလုပ်သမား ID</th>
+                                    <th>အမည်</th>
+                                    <th>စက်</th>
+                                    <th>ထုတ်လုပ်မှုအရေအတွက်</th>
+                                    <th>အရည်အသွေးအဆင့်</th>
+                                    <th>ချို့ယွင်းချက်အရေအတွက်</th>
+                                    <th>မှတ်ချက်</th>
+                                </tr>
+                            </thead>
+                            <tbody id="work-records-table">
+                                <!-- Work records will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Groups Content (Hidden by default) -->
+        <div id="groups-content" style="display: none;">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i> အုပ်စုအချက်အလက်
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>စုစုပေါင်းအုပ်စု:</strong> 10
+                            </div>
+                            <div class="mb-3">
+                                <strong>စက်လိုင်း:</strong> 10 လိုင်း
+                            </div>
+                            <div class="mb-3">
+                                <strong>စက်အရေအတွက်:</strong> <span id="total-group-machines">35</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>ပျမ်းမျှအလုပ်သမား/အုပ်စု:</strong> 3
+                            </div>
+                            <div>
+                                <strong>စုစုပေါင်းထုတ်လုပ်မှု:</strong> 1,250
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-object-group"></i> အုပ်စုများ (လိုင်း 1 မှ 10)
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="groups-list">
+                                <!-- Groups will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-trophy"></i> အုပ်စုအဆင့်သတ်မှတ်ချက်
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>အဆင့်</th>
+                                            <th>အုပ်စု</th>
+                                            <th>စက်အရေအတွက်</th>
+                                            <th>ပျမ်းမျှထုတ်လုပ်မှု</th>
+                                            <th>ပျမ်းမျှအရည်အသွေး</th>
+                                            <th>ချို့ယွင်းနှုန်း</th>
+                                            <th>အလုပ်သမားအရေအတွက်</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="group-ranking">
+                                        <!-- Group ranking will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Entry Content (Hidden by default) -->
+        <div id="data-entry-content" style="display: none;">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-keyboard"></i> နေ့စဉ်အလုပ်မှတ်တမ်းအသွင်း
+                        </div>
+                        <div class="card-body">
+                            <form id="data-entry-form">
+                                <div class="mb-3">
+                                    <label for="entry-employee-id" class="form-label">အလုပ်သမား ID</label>
+                                    <select class="form-control" id="entry-employee-id" required
+                                        onchange="updateMachineForEmployee()">
+                                        <option value="">ရွေးချယ်ပါ</option>
+                                        <!-- Employee options will be loaded here -->
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="entry-machine" class="form-label">စက်</label>
+                                    <select class="form-control" id="entry-machine" required>
+                                        <option value="">ရွေးချယ်ပါ</option>
+                                        <!-- Machine options will be loaded here -->
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="entry-date" class="form-label">နေ့စွဲ</label>
+                                    <input type="date" class="form-control" id="entry-date" required>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="entry-quantity" class="form-label">ထုတ်လုပ်မှုအရေအတွက်</label>
+                                        <input type="number" class="form-control" id="entry-quantity" min="0" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="entry-quality" class="form-label">အရည်အသွေးအဆင့် (1-10)</label>
+                                        <input type="number" class="form-control" id="entry-quality" min="1" max="10"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="entry-defects" class="form-label">ချို့ယွင်းချက်အရေအတွက်</label>
+                                    <input type="number" class="form-control" id="entry-defects" min="0">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="entry-remarks" class="form-label">မှတ်ချက်</label>
+                                    <textarea class="form-control" id="entry-remarks" rows="2"></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save"></i> သိမ်းဆည်းမည်
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-file-upload"></i> Excel/CSV ဖိုင်တင်ခြင်း
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <p>ဒေတာများအားလုံးကို တစ်ပြိုင်နက် တင်ရန် Excel ဖိုင်သုံးနိုင်ပါသည်။</p>
+                                <a href="#" class="btn btn-outline-primary mb-3">
+                                    <i class="fas fa-download"></i> Template ဖိုင်ရယူရန်
+                                </a>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="excel-file" class="form-label">Excel/CSV ဖိုင်ရွေးချယ်ပါ</label>
+                                <input type="file" class="form-control" id="excel-file" accept=".xlsx, .xls, .csv">
+                            </div>
+
+                            <button class="btn btn-success w-100" onclick="uploadExcelFile()">
+                                <i class="fas fa-upload"></i> ဖိုင်တင်မည်
+                            </button>
+
+                            <hr>
+
+                            <div class="mt-3">
+                                <h6>ဖိုင်ဖွဲ့စည်းပုံ</h6>
+                                <small>အောက်ပါ column များပါဝင်ရန်:</small>
+                                <ul>
+                                    <li>employee_id</li>
+                                    <li>machine_id</li>
+                                    <li>date (YYYY-MM-DD)</li>
+                                    <li>production_quantity</li>
+                                    <li>quality_score (1-10)</li>
+                                    <li>defect_count</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">အလုပ်သမားအသစ် ထည့်သွင်းခြင်း</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="employee-form">
+                        <div class="mb-3">
+                            <label for="employee-id" class="form-label">အလုပ်သမား ID</label>
+                            <input type="text" class="form-control" id="employee-id" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="employee-name" class="form-label">အမည်</label>
+                            <input type="text" class="form-control" id="employee-name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="employee-grade" class="form-label">Grade</label>
+                            <select class="form-control" id="employee-grade" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="employee-machine" class="form-label">စက်</label>
+                            <select class="form-control" id="employee-machine" required>
+                                <option value="">ရွေးချယ်ပါ</option>
+                                <!-- Machine options will be loaded -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="employee-group" class="form-label">အုပ်စု (လိုင်း)</label>
+                            <select class="form-control" id="employee-group" required>
+                                <option value="1">လိုင်း 1</option>
+                                <option value="2">လိုင်း 2</option>
+                                <option value="3">လိုင်း 3</option>
+                                <option value="4">လိုင်း 4</option>
+                                <option value="5">လိုင်း 5</option>
+                                <option value="6">လိုင်း 6</option>
+                                <option value="7">လိုင်း 7</option>
+                                <option value="8">လိုင်း 8</option>
+                                <option value="9">လိုင်း 9</option>
+                                <option value="10">လိုင်း 10</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> သိမ်းဆည်းမည်
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Machine Modal -->
+    <div class="modal fade" id="addMachineModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">စက်အသစ် ထည့်သွင်းခြင်း</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="machine-form">
+                        <div class="mb-3">
+                            <label for="machine-id" class="form-label">စက်နံပါတ်</label>
+                            <input type="text" class="form-control" id="machine-id" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="machine-name" class="form-label">စက်အမည်</label>
+                            <input type="text" class="form-control" id="machine-name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="machine-type" class="form-label">စက်အမျိုးအစား</label>
+                            <select class="form-control" id="machine-type" required>
+                                <option value="">ရွေးချယ်ပါ</option>
+                                <!-- Machine type options will be loaded -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="machine-brand" class="form-label">ကုမ္ပဏီအမည်</label>
+                            <input type="text" class="form-control" id="machine-brand">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="machine-purchase-date" class="form-label">ဝယ်ယူသည့်နေ့စွဲ</label>
+                                <input type="date" class="form-control" id="machine-purchase-date">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="machine-status" class="form-label">အခြေအနေ</label>
+                                <select class="form-control" id="machine-status" required>
+                                    <option value="active">အလုပ်လုပ်နိုင်</option>
+                                    <option value="maintenance">ပြင်ဆင်နေ</option>
+                                    <option value="idle">အလုပ်မရှိ</option>
+                                    <option value="broken">ပျက်စီးနေ</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="machine-group" class="form-label">အုပ်စု (လိုင်း)</label>
+                            <select class="form-control" id="machine-group" required>
+                                <option value="1">လိုင်း 1</option>
+                                <option value="2">လိုင်း 2</option>
+                                <option value="3">လိုင်း 3</option>
+                                <option value="4">လိုင်း 4</option>
+                                <option value="5">လိုင်း 5</option>
+                                <option value="6">လိုင်း 6</option>
+                                <option value="7">လိုင်း 7</option>
+                                <option value="8">လိုင်း 8</option>
+                                <option value="9">လိုင်း 9</option>
+                                <option value="10">လိုင်း 10</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="machine-notes" class="form-label">မှတ်ချက်</label>
+                            <textarea class="form-control" id="machine-notes" rows="2"></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> သိမ်းဆည်းမည်
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Work Record Modal -->
+    <div class="modal fade" id="addWorkRecordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">အလုပ်မှတ်တမ်းအသစ် ထည့်သွင်းခြင်း</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="work-record-form">
+                        <div class="mb-3">
+                            <label for="work-employee-id" class="form-label">အလုပ်သမား ID</label>
+                            <select class="form-control" id="work-employee-id" required
+                                onchange="updateMachineForWorkRecord()">
+                                <option value="">ရွေးချယ်ပါ</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="work-machine" class="form-label">စက်</label>
+                            <select class="form-control" id="work-machine" required>
+                                <option value="">ရွေးချယ်ပါ</option>
+                                <!-- Machine options will be loaded -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="work-date" class="form-label">နေ့စွဲ</label>
+                            <input type="date" class="form-control" id="work-date" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="work-quantity" class="form-label">ထုတ်လုပ်မှုအရေအတွက်</label>
+                                <input type="number" class="form-control" id="work-quantity" min="0" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="work-quality" class="form-label">အရည်အသွေးအဆင့် (1-10)</label>
+                                <input type="number" class="form-control" id="work-quality" min="1" max="10" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="work-defects" class="form-label">ချို့ယွင်းချက်အရေအတွက်</label>
+                            <input type="number" class="form-control" id="work-defects" min="0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="work-remarks" class="form-label">မှတ်ချက်</label>
+                            <textarea class="form-control" id="work-remarks" rows="2"></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> သိမ်းဆည်းမည်
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Machine Types Definition
+        const machineTypes = [
+            { id: "lockstitch", name: "Lockstitch စက်", description: "ပုံမှန်ချုပ်စက်" },
+            { id: "overlock", name: "Overlock စက်", description: "ကြိုးတွင်းချုပ်စက်" },
+            { id: "flatlock", name: "Flatlock စက်", description: "ပြားချုပ်စက်" },
+            { id: "buttonhole", name: "အင်္ဂတေစက်", description: "အင်္ဂတေတပ်စက်" },
+            { id: "button", name: "ခလုတ်စက်", description: "ခလုတ်တပ်စက်" },
+            { id: "bartack", name: "Bartack စက်", description: "အားဖြည့်ချုပ်စက်" },
+            { id: "blindstitch", name: "Blindstitch စက်", description: "မမြင်ရချုပ်စက်" },
+            { id: "zigzag", name: "Zigzag စက်", description: "ဇစ်ဇက်ချုပ်စက်" },
+            { id: "chainstitch", name: "Chainstitch စက်", description: "ကွင်းဆက်ချုပ်စက်" },
+            { id: "embroidery", name: "Embroidery စက်", description: "ပန်းချီချုပ်စက်" },
+            { id: "cutting", name: "ဖြတ်စက်", description: "အဝတ်ဖြတ်စက်" },
+            { id: "ironing", name: "အပူပေးစက်", description: "အဝတ်ပြောင်စက်" }
+        ];
+
+        // Sample Data
+        let employees = [
+            { id: "EMP001", name: "မောင်မောင်", grade: "A", machine: "MC001", group: "1", totalProduction: 450, avgQuality: 9.2 },
+            { id: "EMP002", name: "စုစု", grade: "B", machine: "MC002", group: "1", totalProduction: 380, avgQuality: 8.5 },
+            { id: "EMP003", name: "အေးအေး", grade: "A", machine: "MC003", group: "2", totalProduction: 490, avgQuality: 9.5 },
+            { id: "EMP004", name: "ကျော်ကျော်", grade: "C", machine: "MC004", group: "2", totalProduction: 320, avgQuality: 7.8 },
+            { id: "EMP005", name: "နိုင်နိုင်", grade: "B", machine: "MC005", group: "3", totalProduction: 410, avgQuality: 8.7 },
+            { id: "EMP006", name: "ခိုင်ခိုင်", grade: "A", machine: "MC006", group: "4", totalProduction: 470, avgQuality: 9.3 },
+            { id: "EMP007", name: "သီတာဝင်း", grade: "D", machine: "MC007", group: "5", totalProduction: 280, avgQuality: 6.5 },
+            { id: "EMP008", name: "ဝင်းမျိုး", grade: "B", machine: "MC008", group: "6", totalProduction: 395, avgQuality: 8.4 },
+            { id: "EMP009", name: "မြတ်နိုး", grade: "C", machine: "MC009", group: "7", totalProduction: 340, avgQuality: 7.5 },
+            { id: "EMP010", name: "ဇော်လင်း", grade: "B", machine: "MC010", group: "8", totalProduction: 420, avgQuality: 8.9 }
+        ];
+
+        let machines = [
+            { id: "MC001", name: "Juki DDL-8700", type: "lockstitch", brand: "Juki", purchaseDate: "2022-01-15", status: "active", group: "1", userId: "EMP001", age: 2, avgProductionPerHour: 45, notes: "ပုံမှန်အလုပ်လုပ်နိုင်" },
+            { id: "MC002", name: "Brother DB2-B737", type: "lockstitch", brand: "Brother", purchaseDate: "2022-03-20", status: "active", group: "1", userId: "EMP002", age: 2, avgProductionPerHour: 38, notes: "ပုံမှန်အလုပ်လုပ်နိုင်" },
+            { id: "MC003", name: "Juki MO-6700S", type: "overlock", brand: "Juki", purchaseDate: "2021-11-10", status: "active", group: "2", userId: "EMP003", age: 3, avgProductionPerHour: 49, notes: "ထူးချွန်စက်" },
+            { id: "MC004", name: "Singer 14SH654", type: "overlock", brand: "Singer", purchaseDate: "2023-01-05", status: "maintenance", group: "2", userId: "EMP004", age: 1, avgProductionPerHour: 32, notes: "ပြင်ဆင်နေ" },
+            { id: "MC005", name: "Jack JK-5870", type: "flatlock", brand: "Jack", purchaseDate: "2022-06-15", status: "active", group: "3", userId: "EMP005", age: 1, avgProductionPerHour: 41, notes: "ပုံမှန်အလုပ်လုပ်နိုင်" },
+            { id: "MC006", name: "Yamata FY9200", type: "buttonhole", brand: "Yamata", purchaseDate: "2021-08-30", status: "active", group: "4", userId: "EMP006", age: 3, avgProductionPerHour: 47, notes: "ပုံမှန်အလုပ်လုပ်နိုင်" },
+            { id: "MC007", name: "Pfaff 483", type: "button", brand: "Pfaff", purchaseDate: "2020-12-10", status: "broken", group: "5", userId: "EMP007", age: 4, avgProductionPerHour: 28, notes: "ပျက်စီးနေ၊ ပြင်ဆင်ရန်" },
+            { id: "MC008", name: "Typical GC6710", type: "bartack", brand: "Typical", purchaseDate: "2022-09-25", status: "active", group: "6", userId: "EMP008", age: 1, avgProductionPerHour: 39, notes: "ပုံမှန်အလုပ်လုပ်နိုင်" },
+            { id: "MC009", name: "Siruba 747", type: "blindstitch", brand: "Siruba", purchaseDate: "2023-02-14", status: "idle", group: "7", userId: "EMP009", age: 1, avgProductionPerHour: 34, notes: "အလုပ်မရှိ" },
+            { id: "MC010", name: "Maqi 777", type: "zigzag", brand: "Maqi", purchaseDate: "2022-04-18", status: "active", group: "8", userId: "EMP010", age: 2, avgProductionPerHour: 42, notes: "ပုံမှန်အလုပ်လုပ်နိုင်" },
+            { id: "MC011", name: "Juki LK-1900", type: "embroidery", brand: "Juki", purchaseDate: "2021-05-22", status: "active", group: "9", userId: "", age: 3, avgProductionPerHour: 25, notes: "အထူးဒီဇိုင်းချုပ်စက်" },
+            { id: "MC012", name: "Eastman 9000", type: "cutting", brand: "Eastman", purchaseDate: "2020-10-05", status: "active", group: "10", userId: "", age: 4, avgProductionPerHour: 120, notes: "ဖြတ်စက်" }
+        ];
+
+        let workRecords = [
+            { employeeId: "EMP001", name: "မောင်မောင်", machineId: "MC001", date: "2023-10-15", quantity: 45, quality: 9, defects: 1, remarks: "ပုံမှန်" },
+            { employeeId: "EMP002", name: "စုစု", machineId: "MC002", date: "2023-10-15", quantity: 38, quality: 8, defects: 2, remarks: "ပုံမှန်" },
+            { employeeId: "EMP003", name: "အေးအေး", machineId: "MC003", date: "2023-10-15", quantity: 49, quality: 10, defects: 0, remarks: "ထူးချွန်" },
+            { employeeId: "EMP004", name: "ကျော်ကျော်", machineId: "MC004", date: "2023-10-15", quantity: 32, quality: 8, defects: 3, remarks: "ပုံမှန်" },
+            { employeeId: "EMP005", name: "နိုင်နိုင်", machineId: "MC005", date: "2023-10-15", quantity: 41, quality: 9, defects: 1, remarks: "ပုံမှန်" },
+            { employeeId: "EMP006", name: "ခိုင်ခိုင်", machineId: "MC006", date: "2023-10-14", quantity: 47, quality: 9, defects: 1, remarks: "ပုံမှန်" },
+            { employeeId: "EMP007", name: "သီတာဝင်း", machineId: "MC007", date: "2023-10-14", quantity: 28, quality: 7, defects: 4, remarks: "ချို့ယွင်းများ" },
+            { employeeId: "EMP008", name: "ဝင်းမျိုး", machineId: "MC008", date: "2023-10-14", quantity: 39, quality: 8, defects: 2, remarks: "ပုံမှန်" },
+            { employeeId: "EMP009", name: "မြတ်နိုး", machineId: "MC009", date: "2023-10-13", quantity: 34, quality: 8, defects: 3, remarks: "ပုံမှန်" },
+            { employeeId: "EMP010", name: "ဇော်လင်း", machineId: "MC010", date: "2023-10-13", quantity: 42, quality: 9, defects: 1, remarks: "ပုံမှန်" }
+        ];
+
+        let groups = [
+            { id: "1", name: "လိုင်း 1", supervisor: "ဦးကျော်မင်း", employees: 3, machines: 2, avgProduction: 42, avgQuality: 8.8, defects: 2.1 },
+            { id: "2", name: "လိုင်း 2", supervisor: "ဒေါ်မြမြ", employees: 3, machines: 2, avgProduction: 40, avgQuality: 8.7, defects: 2.3 },
+            { id: "3", name: "လိုင်း 3", supervisor: "ဦးအောင်သန်း", employees: 3, machines: 2, avgProduction: 41, avgQuality: 8.5, defects: 2.0 },
+            { id: "4", name: "လိုင်း 4", supervisor: "ဒေါ်သန်းနု", employees: 3, machines: 2, avgProduction: 43, avgQuality: 8.9, defects: 1.8 },
+            { id: "5", name: "လိုင်း 5", supervisor: "ဦးဝင်းရွှေ", employees: 3, machines: 2, avgProduction: 39, avgQuality: 8.2, defects: 2.5 },
+            { id: "6", name: "လိုင်း 6", supervisor: "ဒေါ်ခင်ခင်လေး", employees: 3, machines: 2, avgProduction: 41, avgQuality: 8.6, defects: 2.2 },
+            { id: "7", name: "လိုင်း 7", supervisor: "ဦးတင်အောင်", employees: 3, machines: 2, avgProduction: 38, avgQuality: 8.3, defects: 2.4 },
+            { id: "8", name: "လိုင်း 8", supervisor: "ဒေါ်စန်းရီ", employees: 3, machines: 2, avgProduction: 42, avgQuality: 8.8, defects: 2.0 },
+            { id: "9", name: "လိုင်း 9", supervisor: "ဦးမြင့်ကြွယ်", employees: 3, machines: 2, avgProduction: 40, avgQuality: 8.5, defects: 2.1 },
+            { id: "10", name: "လိုင်း 10", supervisor: "ဒေါ်သက်သက်ခိုင်", employees: 3, machines: 2, avgProduction: 41, avgQuality: 8.7, defects: 2.2 }
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set today's date for date inputs
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('record-date-filter').value = today;
+            document.getElementById('entry-date').value = today;
+            document.getElementById('work-date').value = today;
+            document.getElementById('machine-purchase-date').value = today;
+
+            // Load initial data
+            loadMachineTypesOptions();
+            loadDashboardData();
+            loadEmployeesTable();
+            loadMachinesTable();
+            loadMachineStatusOverview();
+            loadMachineTypesOverview();
+            loadWorkRecordsTable();
+            loadGroupsData();
+            loadEmployeeOptions();
+            loadMachineOptions();
+
+            // Initialize charts
+            initializeCharts();
+
+            // Set up form submissions
+            document.getElementById('employee-form').addEventListener('submit', addEmployee);
+            document.getElementById('machine-form').addEventListener('submit', addMachine);
+            document.getElementById('work-record-form').addEventListener('submit', addWorkRecord);
+            document.getElementById('data-entry-form').addEventListener('submit', addWorkRecordFromDataEntry);
+        });
+
+        // Navigation functions
+        function showDashboard() {
+            hideAllContent();
+            document.getElementById('dashboard-content').style.display = 'block';
+            document.getElementById('page-title').textContent = 'ပင်မစာမျက်နှာ';
+            setActiveNav('dashboard');
+        }
+
+        function showEmployees() {
+            hideAllContent();
+            document.getElementById('employees-content').style.display = 'block';
+            document.getElementById('page-title').textContent = 'အလုပ်သမားများ';
+            setActiveNav('employees');
+        }
+
+        function showWorkRecords() {
+            hideAllContent();
+            document.getElementById('work-records-content').style.display = 'block';
+            document.getElementById('page-title').textContent = 'အလုပ်မှတ်တမ်း';
+            setActiveNav('work-records');
+        }
+
+        function showMachines() {
+            hideAllContent();
+            document.getElementById('machines-content').style.display = 'block';
+            document.getElementById('page-title').textContent = 'စက်ပစ္စည်းများ';
+            setActiveNav('machines');
+        }
+
+        function showGroups() {
+            hideAllContent();
+            document.getElementById('groups-content').style.display = 'block';
+            document.getElementById('page-title').textContent = 'အဖွဲ့များ (10 ဖွဲ့)';
+            setActiveNav('groups');
+        }
+
+        function showDataEntry() {
+            hideAllContent();
+            document.getElementById('data-entry-content').style.display = 'block';
+            document.getElementById('page-title').textContent = 'ဒေတာအသွင်း';
+            setActiveNav('data-entry');
+        }
+
+        function showReports() {
+            hideAllContent();
+            // For simplicity, just show dashboard
+            showDashboard();
+            setActiveNav('reports');
+        }
+
+        function hideAllContent() {
+            document.getElementById('dashboard-content').style.display = 'none';
+            document.getElementById('employees-content').style.display = 'none';
+            document.getElementById('work-records-content').style.display = 'none';
+            document.getElementById('machines-content').style.display = 'none';
+            document.getElementById('groups-content').style.display = 'none';
+            document.getElementById('data-entry-content').style.display = 'none';
+        }
+
+        function setActiveNav(page) {
+            const navItems = document.querySelectorAll('.sidebar-menu a');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Find and activate the clicked nav item
+            navItems.forEach(item => {
+                if (item.textContent.includes(getNavText(page))) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function getNavText(page) {
+            const navMap = {
+                'dashboard': 'ပင်မစာမျက်နှာ',
+                'employees': 'အလုပ်သမားများ',
+                'work-records': 'အလုပ်မှတ်တမ်း',
+                'machines': 'စက်ပစ္စည်းများ',
+                'groups': 'အဖွဲ့များ',
+                'reports': 'အစီရင်ခံစာများ',
+                'data-entry': 'ဒေတာအသွင်း'
+            };
+            return navMap[page] || '';
+        }
+
+        // Machine Types Options
+        function loadMachineTypesOptions() {
+            const machineTypeSelects = [
+                document.getElementById('machine-type'),
+                document.getElementById('filter-machine-type')
+            ];
+
+            machineTypeSelects.forEach(select => {
+                if (select) {
+                    machineTypes.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type.id;
+                        option.textContent = type.name;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Data loading functions
+        function loadDashboardData() {
+            // Update statistics
+            document.getElementById('total-employees').textContent = employees.length;
+            document.getElementById('total-machines').textContent = machines.length;
+            document.getElementById('total-group-machines').textContent = machines.length;
+            document.getElementById('today-records').textContent = workRecords.filter(record => record.date === new Date().toISOString().split('T')[0]).length;
+
+            // Calculate defect rate
+            const totalDefects = workRecords.reduce((sum, record) => sum + (record.defects || 0), 0);
+            const totalQuantity = workRecords.reduce((sum, record) => sum + record.quantity, 0);
+            const defectRate = totalQuantity > 0 ? ((totalDefects / totalQuantity) * 100).toFixed(1) : 0;
+            document.getElementById('defect-rate').textContent = defectRate + '%';
+
+            // Update grade counts
+            const gradeCounts = employees.reduce((acc, emp) => {
+                acc[emp.grade] = (acc[emp.grade] || 0) + 1;
+                return acc;
+            }, {});
+
+            document.getElementById('grade-a-count').textContent = gradeCounts['A'] || 0;
+            document.getElementById('grade-b-count').textContent = gradeCounts['B'] || 0;
+            document.getElementById('grade-c-count').textContent = gradeCounts['C'] || 0;
+            document.getElementById('grade-d-count').textContent = gradeCounts['D'] || 0;
+
+            // Load recent records
+            const recentRecordsTable = document.getElementById('recent-records');
+            recentRecordsTable.innerHTML = '';
+
+            workRecords.slice(0, 5).forEach(record => {
+                const machine = machines.find(m => m.id === record.machineId);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.employeeId}</td>
+                    <td>${record.name}</td>
+                    <td>${machine ? machine.name : record.machineId}</td>
+                    <td>${record.quantity}</td>
+                    <td>${record.quality}/10</td>
+                `;
+                recentRecordsTable.appendChild(row);
+            });
+        }
+
+        function loadMachineStatusOverview() {
+            const overviewContainer = document.getElementById('machine-status-overview');
+            overviewContainer.innerHTML = '';
+
+            // Count machines by status
+            const statusCounts = machines.reduce((acc, machine) => {
+                acc[machine.status] = (acc[machine.status] || 0) + 1;
+                return acc;
+            }, {});
+
+            const statusConfig = {
+                'active': { label: 'အလုပ်လုပ်နိုင်', color: '#27ae60', icon: 'fa-check-circle' },
+                'maintenance': { label: 'ပြင်ဆင်နေ', color: '#f39c12', icon: 'fa-tools' },
+                'idle': { label: 'အလုပ်မရှိ', color: '#3498db', icon: 'fa-pause-circle' },
+                'broken': { label: 'ပျက်စီးနေ', color: '#e74c3c', icon: 'fa-exclamation-triangle' }
+            };
+
+            Object.keys(statusConfig).forEach(status => {
+                const count = statusCounts[status] || 0;
+                const config = statusConfig[status];
+                const percentage = machines.length > 0 ? Math.round((count / machines.length) * 100) : 0;
+
+                const card = document.createElement('div');
+                card.className = 'col-md-3 col-sm-6 mb-3';
+                card.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title">${config.label}</h5>
+                                    <h2 class="mb-0">${count}</h2>
+                                    <small>စက်</small>
+                                </div>
+                                <div style="color: ${config.color}; font-size: 2.5rem;">
+                                    <i class="fas ${config.icon}"></i>
+                                </div>
+                            </div>
+                            <div class="progress mt-3">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: ${percentage}%; background-color: ${config.color};" 
+                                     aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            <small class="text-muted">${percentage}% of total machines</small>
+                        </div>
+                    </div>
+                `;
+                overviewContainer.appendChild(card);
+            });
+        }
+
+        function loadEmployeesTable() {
+            const tableBody = document.getElementById('employees-table');
+            tableBody.innerHTML = '';
+
+            employees.forEach(employee => {
+                const machine = machines.find(m => m.id === employee.machine);
+                const machineName = machine ? `${machine.name} (${machine.type})` : employee.machine;
+
+                const row = document.createElement('tr');
+                // Use totalProduction as sewing points for now if sewingPoints is not defined
+                const sewingPoints = employee.sewingPoints || employee.totalProduction || 'မရှိသေးပါ';
+                row.innerHTML = `
+                    <td>${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${machineName}</td>
+                    <td>လိုင်း ${employee.group}</td>
+                    <td>${sewingPoints}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editEmployee('${employee.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${employee.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function loadMachinesTable() {
+            const tableBody = document.getElementById('machines-table');
+            tableBody.innerHTML = '';
+
+            machines.forEach(machine => {
+                const machineType = machineTypes.find(t => t.id === machine.type);
+                const user = employees.find(e => e.id === machine.userId);
+                const userName = user ? user.name : 'မရှိပါ';
+
+                // Calculate machine age
+                const purchaseDate = new Date(machine.purchaseDate);
+                const today = new Date();
+                const age = Math.floor((today - purchaseDate) / (365 * 24 * 60 * 60 * 1000));
+
+                // Status badge
+                let statusBadge = '';
+                let statusColor = '';
+                switch (machine.status) {
+                    case 'active':
+                        statusBadge = '<span class="badge bg-success">အလုပ်လုပ်နိုင်</span>';
+                        break;
+                    case 'maintenance':
+                        statusBadge = '<span class="badge bg-warning">ပြင်ဆင်နေ</span>';
+                        break;
+                    case 'idle':
+                        statusBadge = '<span class="badge bg-info">အလုပ်မရှိ</span>';
+                        break;
+                    case 'broken':
+                        statusBadge = '<span class="badge bg-danger">ပျက်စီးနေ</span>';
+                        break;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${machine.id}</td>
+                    <td>
+                        <div>${machine.name}</div>
+                        <small class="text-muted">${machineType ? machineType.name : machine.type}</small>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td>လိုင်း ${machine.group}</td>
+                    <td>${userName}</td>
+                    <td>${age} နှစ်</td>
+                    <td>${machine.avgProductionPerHour}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editMachine('${machine.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteMachine('${machine.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function loadMachineTypesOverview() {
+            const overviewContainer = document.getElementById('machine-types-overview');
+            overviewContainer.innerHTML = '';
+
+            // Count machines by type
+            const typeCounts = machines.reduce((acc, machine) => {
+                acc[machine.type] = (acc[machine.type] || 0) + 1;
+                return acc;
+            }, {});
+
+            // Create cards for each machine type
+            machineTypes.forEach(type => {
+                const count = typeCounts[type.id] || 0;
+                const percentage = machines.length > 0 ? Math.round((count / machines.length) * 100) : 0;
+
+                const card = document.createElement('div');
+                card.className = 'col-md-3 col-sm-6 mb-3';
+                card.innerHTML = `
+                    <div class="card h-100 machine-info-card">
+                        <div class="card-body">
+                            <h6 class="card-title">${type.name}</h6>
+                            <p class="card-text small text-muted">${type.description}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">${count}</h4>
+                                    <small>စက်</small>
+                                </div>
+                                <span class="badge badge-machine p-2">${percentage}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                overviewContainer.appendChild(card);
+            });
+        }
+
+        function loadWorkRecordsTable() {
+            const tableBody = document.getElementById('work-records-table');
+            tableBody.innerHTML = '';
+
+            workRecords.forEach(record => {
+                const machine = machines.find(m => m.id === record.machineId);
+                const machineName = machine ? `${machine.name}` : record.machineId;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.employeeId}</td>
+                    <td>${record.name}</td>
+                    <td>${machineName}</td>
+                    <td>${record.quantity}</td>
+                    <td>${record.quality}/10</td>
+                    <td>${record.defects || 0}</td>
+                    <td>${record.remarks || ''}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function loadGroupsData() {
+            // Load groups list
+            const groupsList = document.getElementById('groups-list');
+            groupsList.innerHTML = '';
+
+            groups.forEach(group => {
+                const groupMachines = machines.filter(m => m.group === group.id);
+                const groupEmployees = employees.filter(e => e.group === group.id);
+
+                const groupCard = document.createElement('div');
+                groupCard.className = 'col-md-6 col-lg-4 mb-3';
+                groupCard.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${group.name}</h5>
+                            <p class="card-text">
+                                <strong>ကြီးကြပ်သူ:</strong> ${group.supervisor}<br>
+                                <strong>အလုပ်သမား:</strong> ${groupEmployees.length} ဦး<br>
+                                <strong>စက်:</strong> ${groupMachines.length} လုံး<br>
+                                <strong>ပျမ်းမျှထုတ်လုပ်မှု:</strong> ${group.avgProduction}<br>
+                                <strong>ပျမ်းမျှအရည်အသွေး:</strong> ${group.avgQuality}/10
+                            </p>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewGroupDetails('${group.id}')">
+                                အသေးစိတ်ကြည့်မည်
+                            </button>
+                        </div>
+                    </div>
+                `;
+                groupsList.appendChild(groupCard);
+            });
+
+            // Load group ranking
+            const groupRanking = document.getElementById('group-ranking');
+            groupRanking.innerHTML = '';
+
+            // Sort groups by performance (avgProduction * avgQuality)
+            const sortedGroups = [...groups].sort((a, b) =>
+                (b.avgProduction * b.avgQuality) - (a.avgProduction * a.avgQuality)
+            );
+
+            sortedGroups.forEach((group, index) => {
+                const groupMachines = machines.filter(m => m.group === group.id);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${group.name}</td>
+                    <td>${groupMachines.length}</td>
+                    <td>${group.avgProduction}</td>
+                    <td>${group.avgQuality}/10</td>
+                    <td>${group.defects}%</td>
+                    <td>${group.employees} ဦး</td>
+                `;
+                groupRanking.appendChild(row);
+            });
+        }
+
+        function loadEmployeeOptions() {
+            const employeeSelects = [
+                document.getElementById('entry-employee-id'),
+                document.getElementById('work-employee-id')
+            ];
+
+            employeeSelects.forEach(select => {
+                if (select) {
+                    select.innerHTML = '<option value="">ရွေးချယ်ပါ</option>';
+                    employees.forEach(employee => {
+                        const option = document.createElement('option');
+                        option.value = employee.id;
+                        option.textContent = `${employee.id} - ${employee.name}`;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        function loadMachineOptions() {
+            const machineSelects = [
+                document.getElementById('entry-machine'),
+                document.getElementById('work-machine'),
+                document.getElementById('filter-machine'),
+                document.getElementById('record-machine-filter'),
+                document.getElementById('employee-machine')
+            ];
+
+            machineSelects.forEach(select => {
+                if (select) {
+                    select.innerHTML = '<option value="">ရွေးချယ်ပါ</option>';
+                    machines.forEach(machine => {
+                        const machineType = machineTypes.find(t => t.id === machine.type);
+                        const option = document.createElement('option');
+                        option.value = machine.id;
+                        option.textContent = `${machine.id} - ${machine.name} (${machineType ? machineType.name : machine.type})`;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // Update machine based on selected employee
+        function updateMachineForEmployee() {
+            const employeeId = document.getElementById('entry-employee-id').value;
+            const employee = employees.find(e => e.id === employeeId);
+            const machineSelect = document.getElementById('entry-machine');
+
+            if (employee && machineSelect) {
+                machineSelect.value = employee.machine || '';
+            }
+        }
+
+        function updateMachineForWorkRecord() {
+            const employeeId = document.getElementById('work-employee-id').value;
+            const employee = employees.find(e => e.id === employeeId);
+            const machineSelect = document.getElementById('work-machine');
+
+            if (employee && machineSelect) {
+                machineSelect.value = employee.machine || '';
+            }
+        }
+
+        // Chart functions
+        function initializeCharts() {
+            // Grade distribution chart
+            const gradeCtx = document.getElementById('gradeChart').getContext('2d');
+            const gradeCounts = employees.reduce((acc, emp) => {
+                acc[emp.grade] = (acc[emp.grade] || 0) + 1;
+                return acc;
+            }, {});
+
+            new Chart(gradeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['A', 'B', 'C', 'D'],
+                    datasets: [{
+                        data: [
+                            gradeCounts['A'] || 0,
+                            gradeCounts['B'] || 0,
+                            gradeCounts['C'] || 0,
+                            gradeCounts['D'] || 0
+                        ],
+                        backgroundColor: [
+                            '#27ae60',
+                            '#3498db',
+                            '#f39c12',
+                            '#e74c3c'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Machine type distribution chart
+            const machineTypeCtx = document.getElementById('machineTypeChart').getContext('2d');
+            const typeCounts = machines.reduce((acc, machine) => {
+                acc[machine.type] = (acc[machine.type] || 0) + 1;
+                return acc;
+            }, {});
+
+            const machineTypeLabels = machineTypes.map(t => t.name);
+            const machineTypeData = machineTypes.map(t => typeCounts[t.id] || 0);
+
+            new Chart(machineTypeCtx, {
+                type: 'bar',
+                data: {
+                    labels: machineTypeLabels,
+                    datasets: [{
+                        label: 'စက်အရေအတွက်',
+                        data: machineTypeData,
+                        backgroundColor: '#8e44ad'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'စက်အရေအတွက်'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                autoSkip: true,
+                                maxRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Modal functions
+        function showAddEmployeeModal() {
+            const modalEl = document.getElementById('addEmployeeModal');
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+
+        function showAddMachineModal() {
+            const modalEl = document.getElementById('addMachineModal');
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+
+        function showAddWorkRecordModal() {
+            const modalEl = document.getElementById('addWorkRecordModal');
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+
+        // Form submission functions
+        function addEmployee(e) {
+            e.preventDefault();
+
+            const newEmployee = {
+                id: document.getElementById('employee-id').value,
+                name: document.getElementById('employee-name').value,
+                grade: document.getElementById('employee-grade').value,
+                machine: document.getElementById('employee-machine').value,
+                group: document.getElementById('employee-group').value,
+                totalProduction: 0,
+                avgQuality: 0
+            };
+
+            employees.push(newEmployee);
+
+            // Update machine user assignment
+            const machine = machines.find(m => m.id === newEmployee.machine);
+            if (machine) {
+                machine.userId = newEmployee.id;
+            }
+
+            // Reset form and close modal
+            document.getElementById('employee-form').reset();
+            bootstrap.Modal.getInstance(document.getElementById('addEmployeeModal')).hide();
+
+            // Refresh data
+            loadDashboardData();
+            loadEmployeesTable();
+            loadMachinesTable();
+            loadEmployeeOptions();
+            loadMachineOptions();
+
+            alert('အလုပ်သမား အသစ်ထည့်သွင်းခြင်း အောင်မြင်ပါသည်။');
+        }
+
+        function addMachine(e) {
+            e.preventDefault();
+
+            const newMachine = {
+                id: document.getElementById('machine-id').value,
+                name: document.getElementById('machine-name').value,
+                type: document.getElementById('machine-type').value,
+                brand: document.getElementById('machine-brand').value,
+                purchaseDate: document.getElementById('machine-purchase-date').value,
+                status: document.getElementById('machine-status').value,
+                group: document.getElementById('machine-group').value,
+                userId: "",
+                age: 1,
+                avgProductionPerHour: 0,
+                notes: document.getElementById('machine-notes').value
+            };
+
+            machines.push(newMachine);
+
+            // Reset form and close modal
+            document.getElementById('machine-form').reset();
+            document.getElementById('machine-purchase-date').value = new Date().toISOString().split('T')[0];
+            bootstrap.Modal.getInstance(document.getElementById('addMachineModal')).hide();
+
+            // Refresh data
+            loadDashboardData();
+            loadMachinesTable();
+            loadMachineStatusOverview();
+            loadMachineTypesOverview();
+            loadMachineOptions();
+
+            alert('စက် အသစ်ထည့်သွင်းခြင်း အောင်မြင်ပါသည်။');
+        }
+
+        function addWorkRecord(e) {
+            e.preventDefault();
+
+            const employeeId = document.getElementById('work-employee-id').value;
+            const employee = employees.find(emp => emp.id === employeeId);
+            const machineId = document.getElementById('work-machine').value;
+            const machine = machines.find(m => m.id === machineId);
+
+            if (!employee) {
+                alert('အလုပ်သမား ID မှားယွင်းနေပါသည်။');
+                return;
+            }
+
+            if (!machine) {
+                alert('စက်နံပါတ် မှားယွင်းနေပါသည်။');
+                return;
+            }
+
+            const newRecord = {
+                employeeId: employeeId,
+                name: employee.name,
+                machineId: machineId,
+                date: document.getElementById('work-date').value,
+                quantity: parseInt(document.getElementById('work-quantity').value),
+                quality: parseInt(document.getElementById('work-quality').value),
+                defects: parseInt(document.getElementById('work-defects').value) || 0,
+                remarks: document.getElementById('work-remarks').value
+            };
+
+            workRecords.unshift(newRecord);
+
+            // Update employee statistics
+            updateEmployeeStats(employeeId, newRecord.quantity, newRecord.quality);
+
+            // Update machine statistics
+            if (machine) {
+                machine.avgProductionPerHour = Math.round((machine.avgProductionPerHour + newRecord.quantity) / 2);
+            }
+
+            // Reset form and close modal
+            document.getElementById('work-record-form').reset();
+            document.getElementById('work-date').value = new Date().toISOString().split('T')[0];
+            bootstrap.Modal.getInstance(document.getElementById('addWorkRecordModal')).hide();
+
+            // Refresh data
+            loadDashboardData();
+            loadWorkRecordsTable();
+            loadMachinesTable();
+
+            alert('အလုပ်မှတ်တမ်း အသစ်ထည့်သွင်းခြင်း အောင်မြင်ပါသည်။');
+        }
+
+        function addWorkRecordFromDataEntry(e) {
+            e.preventDefault();
+
+            const employeeId = document.getElementById('entry-employee-id').value;
+            const employee = employees.find(emp => emp.id === employeeId);
+            const machineId = document.getElementById('entry-machine').value;
+            const machine = machines.find(m => m.id === machineId);
+
+            if (!employee) {
+                alert('အလုပ်သမား ID မှားယွင်းနေပါသည်။');
+                return;
+            }
+
+            if (!machine) {
+                alert('စက်နံပါတ် မှားယွင်းနေပါသည်။');
+                return;
+            }
+
+            const newRecord = {
+                employeeId: employeeId,
+                name: employee.name,
+                machineId: machineId,
+                date: document.getElementById('entry-date').value,
+                quantity: parseInt(document.getElementById('entry-quantity').value),
+                quality: parseInt(document.getElementById('entry-quality').value),
+                defects: parseInt(document.getElementById('entry-defects').value) || 0,
+                remarks: document.getElementById('entry-remarks').value
+            };
+
+            workRecords.unshift(newRecord);
+
+            // Update employee statistics
+            updateEmployeeStats(employeeId, newRecord.quantity, newRecord.quality);
+
+            // Update machine statistics
+            if (machine) {
+                machine.avgProductionPerHour = Math.round((machine.avgProductionPerHour + newRecord.quantity) / 2);
+            }
+
+            // Reset form
+            document.getElementById('data-entry-form').reset();
+            document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+
+            // Refresh data
+            loadDashboardData();
+            loadWorkRecordsTable();
+            loadMachinesTable();
+
+            alert('အလုပ်မှတ်တမ်း အသစ်ထည့်သွင်းခြင်း အောင်မြင်ပါသည်။');
+        }
+
+        function updateEmployeeStats(employeeId, quantity, quality) {
+            const employee = employees.find(emp => emp.id === employeeId);
+            if (employee) {
+                employee.totalProduction += quantity;
+
+                // Calculate new average quality
+                const employeeRecords = workRecords.filter(record => record.employeeId === employeeId);
+                const totalQuality = employeeRecords.reduce((sum, record) => sum + record.quality, 0);
+                employee.avgQuality = employeeRecords.length > 0 ? (totalQuality / employeeRecords.length).toFixed(1) : 0;
+            }
+        }
+
+        // Filter functions
+        function filterEmployees() {
+            const searchTerm = document.getElementById('search-employee').value.toLowerCase();
+            const gradeFilter = document.getElementById('filter-grade').value;
+            const machineFilter = document.getElementById('filter-machine').value;
+            const groupFilter = document.getElementById('filter-group').value;
+
+            const filteredEmployees = employees.filter(employee => {
+                const matchesSearch = !searchTerm ||
+                    employee.id.toLowerCase().includes(searchTerm) ||
+                    employee.name.toLowerCase().includes(searchTerm);
+                const matchesGrade = !gradeFilter || employee.grade === gradeFilter;
+                const matchesMachine = !machineFilter || employee.machine === machineFilter;
+                const matchesGroup = !groupFilter || employee.group === groupFilter;
+
+                return matchesSearch && matchesGrade && matchesMachine && matchesGroup;
+            });
+
+            const tableBody = document.getElementById('employees-table');
+            tableBody.innerHTML = '';
+
+            filteredEmployees.forEach(employee => {
+                const machine = machines.find(m => m.id === employee.machine);
+                const machineName = machine ? `${machine.name} (${machine.type})` : employee.machine;
+
+                const row = document.createElement('tr');
+                // Use totalProduction as sewing points for now if sewingPoints is not defined
+                const sewingPoints = employee.sewingPoints || employee.totalProduction || 'မရှိသေးပါ';
+                row.innerHTML = `
+                    <td>${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${machineName}</td>
+                    <td>လိုင်း ${employee.group}</td>
+                    <td>${sewingPoints}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editEmployee('${employee.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee('${employee.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterMachines() {
+            const typeFilter = document.getElementById('filter-machine-type').value;
+            const statusFilter = document.getElementById('filter-machine-status').value;
+            const groupFilter = document.getElementById('filter-machine-group').value;
+
+            const filteredMachines = machines.filter(machine => {
+                const matchesType = !typeFilter || machine.type === typeFilter;
+                const matchesStatus = !statusFilter || machine.status === statusFilter;
+                const matchesGroup = !groupFilter || machine.group === groupFilter;
+
+                return matchesType && matchesStatus && matchesGroup;
+            });
+
+            const tableBody = document.getElementById('machines-table');
+            tableBody.innerHTML = '';
+
+            filteredMachines.forEach(machine => {
+                const machineType = machineTypes.find(t => t.id === machine.type);
+                const user = employees.find(e => e.id === machine.userId);
+                const userName = user ? user.name : 'မရှိပါ';
+
+                // Calculate machine age
+                const purchaseDate = new Date(machine.purchaseDate);
+                const today = new Date();
+                const age = Math.floor((today - purchaseDate) / (365 * 24 * 60 * 60 * 1000));
+
+                // Status badge
+                let statusBadge = '';
+                switch (machine.status) {
+                    case 'active':
+                        statusBadge = '<span class="badge bg-success">အလုပ်လုပ်နိုင်</span>';
+                        break;
+                    case 'maintenance':
+                        statusBadge = '<span class="badge bg-warning">ပြင်ဆင်နေ</span>';
+                        break;
+                    case 'idle':
+                        statusBadge = '<span class="badge bg-info">အလုပ်မရှိ</span>';
+                        break;
+                    case 'broken':
+                        statusBadge = '<span class="badge bg-danger">ပျက်စီးနေ</span>';
+                        break;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${machine.id}</td>
+                    <td>
+                        <div>${machine.name}</div>
+                        <small class="text-muted">${machineType ? machineType.name : machine.type}</small>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td>လိုင်း ${machine.group}</td>
+                    <td>${userName}</td>
+                    <td>${age} နှစ်</td>
+                    <td>${machine.avgProductionPerHour}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editMachine('${machine.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteMachine('${machine.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterWorkRecords() {
+            const dateFilter = document.getElementById('record-date-filter').value;
+            const employeeFilter = document.getElementById('record-employee-filter').value.toLowerCase();
+            const machineFilter = document.getElementById('record-machine-filter').value;
+
+            const filteredRecords = workRecords.filter(record => {
+                const matchesDate = !dateFilter || record.date === dateFilter;
+                const matchesEmployee = !employeeFilter ||
+                    record.employeeId.toLowerCase().includes(employeeFilter) ||
+                    record.name.toLowerCase().includes(employeeFilter);
+                const matchesMachine = !machineFilter || record.machineId === machineFilter;
+
+                return matchesDate && matchesEmployee && matchesMachine;
+            });
+
+            const tableBody = document.getElementById('work-records-table');
+            tableBody.innerHTML = '';
+
+            filteredRecords.forEach(record => {
+                const machine = machines.find(m => m.id === record.machineId);
+                const machineName = machine ? `${machine.name}` : record.machineId;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.employeeId}</td>
+                    <td>${record.name}</td>
+                    <td>${machineName}</td>
+                    <td>${record.quantity}</td>
+                    <td>${record.quality}/10</td>
+                    <td>${record.defects || 0}</td>
+                    <td>${record.remarks || ''}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Employee management functions
+        function editEmployee(employeeId) {
+            const employee = employees.find(emp => emp.id === employeeId);
+            if (employee) {
+                document.getElementById('employee-id').value = employee.id;
+                document.getElementById('employee-name').value = employee.name;
+                document.getElementById('employee-grade').value = employee.grade;
+                document.getElementById('employee-machine').value = employee.machine;
+                document.getElementById('employee-group').value = employee.group;
+
+                showAddEmployeeModal();
+            }
+        }
+
+        function deleteEmployee(employeeId) {
+            if (confirm('ဤအလုပ်သမားကို ဖျက်မည်မှာ သေချာပါသလား?')) {
+                // Remove employee from machine assignment
+                const employee = employees.find(emp => emp.id === employeeId);
+                if (employee && employee.machine) {
+                    const machine = machines.find(m => m.id === employee.machine);
+                    if (machine) {
+                        machine.userId = "";
+                    }
+                }
+
+                employees = employees.filter(emp => emp.id !== employeeId);
+                workRecords = workRecords.filter(record => record.employeeId !== employeeId);
+
+                loadDashboardData();
+                loadEmployeesTable();
+                loadMachinesTable();
+                loadWorkRecordsTable();
+                loadEmployeeOptions();
+                loadMachineOptions();
+
+                alert('အလုပ်သမား ဖျက်ခြင်း အောင်မြင်ပါသည်။');
+            }
+        }
+
+        // Machine management functions
+        function editMachine(machineId) {
+            const machine = machines.find(m => m.id === machineId);
+            if (machine) {
+                document.getElementById('machine-id').value = machine.id;
+                document.getElementById('machine-name').value = machine.name;
+                document.getElementById('machine-type').value = machine.type;
+                document.getElementById('machine-brand').value = machine.brand;
+                document.getElementById('machine-purchase-date').value = machine.purchaseDate;
+                document.getElementById('machine-status').value = machine.status;
+                document.getElementById('machine-group').value = machine.group;
+                document.getElementById('machine-notes').value = machine.notes;
+
+                showAddMachineModal();
+            }
+        }
+
+        function deleteMachine(machineId) {
+            if (confirm('ဤစက်ကို ဖျက်မည်မှာ သေချာပါသလား?')) {
+                // Remove machine from employee assignment
+                const employee = employees.find(emp => emp.machine === machineId);
+                if (employee) {
+                    employee.machine = "";
+                }
+
+                machines = machines.filter(m => m.id !== machineId);
+                workRecords = workRecords.filter(record => record.machineId !== machineId);
+
+                loadDashboardData();
+                loadMachinesTable();
+                loadMachineStatusOverview();
+                loadMachineTypesOverview();
+                loadEmployeesTable();
+                loadWorkRecordsTable();
+                loadMachineOptions();
+
+                alert('စက် ဖျက်ခြင်း အောင်မြင်ပါသည်။');
+            }
+        }
+
+        // Group functions
+        function viewGroupDetails(groupId) {
+            const group = groups.find(g => g.id === groupId);
+            const groupMachines = machines.filter(m => m.group === groupId);
+            const groupEmployees = employees.filter(e => e.group === groupId);
+
+            let machineList = "";
+            groupMachines.forEach(machine => {
+                const machineType = machineTypes.find(t => t.id === machine.type);
+                machineList += `${machine.id} - ${machine.name} (${machineType ? machineType.name : machine.type})\n`;
+            });
+
+            let employeeList = "";
+            groupEmployees.forEach(employee => {
+                employeeList += `${employee.id} - ${employee.name} (Grade ${employee.grade})\n`;
+            });
+
+            alert(`${group.name}\nကြီးကြပ်သူ: ${group.supervisor}\nအလုပ်သမား: ${groupEmployees.length} ဦး\nစက်: ${groupMachines.length} လုံး\nပျမ်းမျှထုတ်လုပ်မှု: ${group.avgProduction}\nပျမ်းမျှအရည်အသွေး: ${group.avgQuality}/10\nချို့ယွင်းနှုန်း: ${group.defects}%\n\nစက်များ:\n${machineList}\nအလုပ်သမားများ:\n${employeeList}`);
+        }
+
+        // Excel upload simulation
+        function uploadExcelFile() {
+            const fileInput = document.getElementById('excel-file');
+            if (!fileInput.files.length) {
+                alert('ကျေးဇူးပြု၍ ဖိုင်ရွေးချယ်ပါ။');
+                return;
+            }
+
+            // Simulate upload process
+            alert('ဖိုင်တင်ခြင်း စတင်ပါပြီ... (ဤသည်မှာ simulation ဖြစ်ပါသည်)');
+
+            // In a real app, you would handle the file upload here
+            // For demo purposes, we'll add some sample records
+            setTimeout(() => {
+                const sampleRecords = [
+                    {
+                        employeeId: "EMP011",
+                        name: "ထွန်းထွန်း",
+                        machineId: "MC011",
+                        date: new Date().toISOString().split('T')[0],
+                        quantity: 44,
+                        quality: 9,
+                        defects: 1,
+                        remarks: "Excel မှတင်ထားခြင်း"
+                    },
+                    {
+                        employeeId: "EMP012",
+                        name: "မြင့်မြင့်",
+                        machineId: "MC012",
+                        date: new Date().toISOString().split('T')[0],
+                        quantity: 39,
+                        quality: 8,
+                        defects: 2,
+                        remarks: "Excel မှတင်ထားခြင်း"
+                    }
+                ];
+
+                sampleRecords.forEach(record => {
+                    workRecords.unshift(record);
+                    updateEmployeeStats(record.employeeId, record.quantity, record.quality);
+                });
+
+                loadDashboardData();
+                loadWorkRecordsTable();
+
+                alert('ဖိုင်တင်ခြင်း အောင်မြင်ပါသည်။ မှတ်တမ်း ၂ ခု ထပ်မံထည့်သွင်းပြီးပါပြီ။');
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>
